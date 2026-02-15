@@ -1,0 +1,118 @@
+% =========================
+% setting.tex (English / LTR)
+% =========================
+
+% Line spacing for the whole document
+\renewcommand{\baselinestretch}{1.4}
+
+% Packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{float}
+
+\usepackage{amsmath, amssymb}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tcolorbox}
+\usepackage{booktabs}
+\usepackage{calc}
+\usepackage{eso-pic}
+\usepackage{fontspec} % because you're using xelatex
+\usepackage{tabularx}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+% Fonts (English)
+% Set your main font here – adjust if you have another font installed
+\setmainfont{Times New Roman}
+
+% Colors
+\definecolor{darkblue}{rgb}{.204,.353,.541}
+\definecolor{lightblue}{RGB}{210, 227, 245}
+
+% Section box command
+\newcommand{\sectionbox}[1]{%
+  \begin{tcolorbox}[colback=lightblue, colframe=lightblue, width=\linewidth, sharp corners]
+    \color{darkblue} \eighteenpt #1
+  \end{tcolorbox}
+}
+
+% Font size commands
+\newcommand{\sixteenpt}{\fontsize{16pt}{18pt}\selectfont}
+\newcommand{\eighteenpt}{\fontsize{18pt}{20pt}\selectfont}
+\newcommand{\twentytwopt}{\fontsize{22pt}{24pt}\selectfont}
+\newcommand{\twentyeightpt}{\fontsize{28pt}{30pt}\selectfont}
+
+% Section and subsection formatting (English, LTR)
+\titleformat{\section}
+  {\eighteenpt\bfseries}{}{0em}{\sectionbox}
+\titlespacing{\section}{0pt}{0pt}{0pt}
+
+\titleformat{\subsection}
+  {\color{darkblue}\sixteenpt\bfseries}
+  {\thesubsection}{1em}{}
+
+% Page frame margins
+\newlength{\PageFrameTopMargin}
+\newlength{\PageFrameBottomMargin}
+\newlength{\PageFrameLeftMargin}
+\newlength{\PageFrameRightMargin}
+
+\setlength{\PageFrameTopMargin}{1cm}
+\setlength{\PageFrameBottomMargin}{1cm}
+\setlength{\PageFrameLeftMargin}{1cm}
+\setlength{\PageFrameRightMargin}{1cm}
+
+\makeatletter
+
+% Draw the frame on every page
+\newlength{\Page@FrameHeight}
+\newlength{\Page@FrameWidth}
+\AddToShipoutPicture{
+  \setlength{\Page@FrameHeight}{\paperheight-\PageFrameTopMargin-\PageFrameBottomMargin}
+  \setlength{\Page@FrameWidth}{\paperwidth-\PageFrameLeftMargin-\PageFrameRightMargin}
+  \put(\strip@pt\PageFrameLeftMargin,\strip@pt\PageFrameTopMargin){
+    {\framebox(\strip@pt\Page@FrameWidth, \strip@pt\Page@FrameHeight){}}
+  }
+}
+\makeatother
+
+% =========================
+% Custom title page
+% =========================
+\makeatletter
+\def\maketitle{
+  \begin{center}
+    % Row with logos
+    \begin{tabular}{ p{3cm} p{7cm} p{3.5cm} }
+      \includegraphics[width=3cm]{img/logo.png} &
+      \vspace{-3cm}
+      \begin{center}
+        {\sixteenpt\textbf{University of Tehran}}\\
+        {\sixteenpt\textbf{School of Electrical and Computer Engineering}}\\
+      \end{center}
+      &
+      \includegraphics[width=3.5cm]{img/eng-logo.png}
+    \end{tabular}
+
+    \vspace{5cm}
+    {\twentyeightpt\textbf{MACHINE LEARNING}}\\
+
+    \vspace{1.5cm}
+    {\twentytwopt\textbf{Final Project \assignNum}}\\
+
+    \vspace{4cm}
+    {\sixteenpt\textbf{Student Name}}\\
+    {\sixteenpt\@author}\\[2em]
+
+    {\sixteenpt\textbf{Student ID}}\\
+    {\sixteenpt\SNum}\\
+
+    \vspace{3cm}
+    {\normalsize\@date}
+  \end{center}
+}
+\makeatother

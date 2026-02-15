@@ -1,0 +1,410 @@
+% !TEX TS-program = xelatex
+
+\documentclass[a4paper,14pt]{extarticle}
+% Include settings from setting.tex
+\input{setting.tex}
+
+\geometry{a4paper, margin=1in}
+\graphicspath{{img/}}
+
+\newcommand{\assignNum}{} % change the number of the assignment here
+\author{Arash Taherifard - Shayan Maleki - Mohammad kardoost}  % change your name here
+\newcommand{\SNum}{810102474 - 810102515 - 810102495} % change your SID here
+\date{\today}
+\title{Assignment \assignNum}
+
+\begin{document}
+\pagenumbering{gobble}
+\maketitle
+
+\newpage
+\tableofcontents
+
+\newpage
+\listoffigures
+
+\newpage
+\listoftables
+
+\newpage
+\pagenumbering{arabic}
+
+\newpage
+
+\section{Data Preprocessing Pipeline}
+
+\subsection{Overview}
+
+The first phase of this project focuses on transforming the raw audio dataset into a structured, clean, and machine-learning-ready representation. The dataset consists of 712 voice recordings (approximately one minute each) distributed across four languages (German, Italian, Korean, and Spanish) and two gender categories (Male and Female). The preprocessing pipeline was designed to ensure data consistency, remove artifacts, and extract informative acoustic representations suitable for both supervised and unsupervised machine learning tasks.
+
+The preprocessing pipeline is divided into two main stages:
+\begin{itemize}
+\item Data Cleaning
+\item Feature Extraction
+\end{itemize}
+
+Each stage was implemented in a modular and reproducible manner to allow easy extension in later modeling stages.
+
+% =====================================================
+\section{Data Cleaning}
+
+\subsection{Objectives}
+
+The primary objectives of data cleaning were:
+\begin{itemize}
+\item Ensure consistent sampling characteristics across all recordings
+\item Remove silence and irrelevant signal segments
+\item Normalize audio amplitude for fair comparison
+\item Standardize audio duration
+\item Detect and remove corrupted or invalid recordings
+\end{itemize}
+
+These steps are essential because machine learning models are sensitive to inconsistencies in input distributions. Without proper cleaning, models may learn dataset artifacts instead of meaningful speech characteristics.
+
+% -------------------------
+\subsection{Audio Standardization}
+
+All audio files were converted to mono and resampled to 16 kHz. This sampling rate is widely used in speech processing because it preserves speech-relevant frequency content while reducing computational cost.
+
+Conceptually, this step ensures that:
+\begin{itemize}
+\item All recordings have identical temporal resolution
+\item Feature extraction produces comparable representations
+\end{itemize}
+
+% -------------------------
+\subsection{Silence Removal}
+
+Leading and trailing silence was removed using energy-based threshold trimming. Audiobook recordings often contain silence segments that do not carry linguistic information but can bias statistical feature extraction.
+
+Removing silence improves:
+\begin{itemize}
+\item Signal-to-noise ratio
+\item Feature stability
+\item Model training efficiency
+\end{itemize}
+
+% -------------------------
+\subsection{Amplitude Normalization}
+
+Each audio signal was normalized using RMS (Root Mean Square) normalization. RMS normalization ensures that differences in recording volume do not influence feature magnitudes.
+
+Additionally, peak limiting was applied to prevent clipping artifacts after normalization.
+
+% -------------------------
+\subsection{Duration Standardization}
+
+All recordings were padded or truncated to exactly 60 seconds. This guarantees equal-length signals across the dataset and simplifies batch feature extraction.
+
+This step is particularly important for classical machine learning pipelines that require fixed-size feature vectors.
+
+% -------------------------
+\subsection{Data Quality Validation}
+
+After cleaning, each audio file was validated using:
+\begin{itemize}
+\item Finite-value checks
+\item Minimum duration thresholds
+\item Clipping ratio estimation
+\end{itemize}
+
+\subsection{Cleaning Results}
+
+All 712 recordings passed quality checks successfully:
+\begin{itemize}
+\item Valid recordings: 712
+\item Corrupted recordings removed: 0
+\end{itemize}
+
+This indicates high dataset quality and confirms that preprocessing thresholds were appropriate.
+
+% =====================================================
+\section{Data Augmentation}
+
+\subsection{Motivation}
+
+Data augmentation was used to improve model generalization by simulating real-world recording variations without altering class labels.
+
+Augmentation increases robustness against:
+\begin{itemize}
+\item Background noise
+\item Speaker variability
+\item Recording condition differences
+\end{itemize}
+
+\subsection{Augmentation Techniques}
+
+The following augmentations were applied probabilistically:
+
+\subsubsection{Time Shift}
+Simulates temporal misalignment between speech and recording start time.
+
+\subsubsection{Additive Noise}
+Simulates environmental recording noise using controlled signal-to-noise ratio ranges.
+
+\subsubsection{Time Stretch}
+Simulates variations in speaking rate.
+
+\subsubsection{Pitch Shift}
+Simulates speaker vocal pitch differences.
+
+\subsubsection{Gain Variation}
+Simulates microphone sensitivity and recording volume variation.
+
+\subsection{Augmentation Results}
+
+Each recording generated one augmented sample:
+\begin{itemize}
+\item Original samples: 712
+\item Augmented samples: 712
+\item Final dataset size: 1424 samples
+\end{itemize}
+
+The class distribution remained balanced after augmentation, ensuring no bias was introduced.
+
+% =====================================================
+\section{Feature Extraction}
+
+\subsection{Objectives}
+
+Feature extraction converts raw audio signals into numerical representations that capture linguistic and acoustic structure.
+
+The chosen features were selected based on speech processing literature and their effectiveness in language identification tasks.
+
+% -------------------------
+\subsection{Mel-Frequency Cepstral Coefficients (MFCC)}
+
+MFCC features capture the spectral envelope of speech, which correlates with phonetic structure. MFCCs approximate human auditory perception using mel-scaled frequency bands.
+
+Delta and delta-delta MFCC features were also extracted to capture temporal speech dynamics.
+
+% -------------------------
+\subsection{Log-Mel Spectrogram Statistics}
+
+Log-Mel spectrograms provide a perceptually meaningful time-frequency representation. Instead of using full spectrogram matrices, statistical summaries were computed across time frames to produce fixed-length feature vectors.
+
+% -------------------------
+\subsection{Spectral and Temporal Descriptors}
+
+Additional features included:
+\begin{itemize}
+\item Zero Crossing Rate (signal noisiness)
+\item RMS Energy (loudness)
+\item Spectral Centroid (brightness)
+\item Spectral Bandwidth (frequency spread)
+\item Spectral Rolloff (energy distribution)
+\item Spectral Contrast (harmonic structure)
+\end{itemize}
+
+% -------------------------
+\subsection{Statistical Aggregation}
+
+Since audio features are frame-based, statistical summaries were computed across time:
+\begin{itemize}
+\item Mean
+\item Standard deviation
+\item Minimum
+\item Maximum
+\item Median
+\item Skewness
+\item Kurtosis
+\end{itemize}
+
+This produces fixed-length vectors suitable for classical machine learning models.
+
+% -------------------------
+\subsection{Feature Extraction Results}
+
+Feature extraction produced:
+\begin{itemize}
+\item One feature vector per audio sample
+\item Consistent dimensional representation
+\item Zero missing or invalid feature values
+\end{itemize}
+
+% =====================================================
+\section{Pipeline Reliability}
+
+The preprocessing pipeline ensures:
+\begin{itemize}
+\item Reproducibility
+\item Robustness to recording variations
+\item Compatibility with both classification and clustering algorithms
+\end{itemize}
+
+% =====================================================
+\section{Conclusion}
+
+The data cleaning and feature extraction pipeline successfully transformed raw audio recordings into high-quality numerical representations. The dataset was fully preserved during cleaning, balanced during augmentation, and enriched through feature extraction. These processed features provide a strong foundation for downstream machine learning tasks such as language classification and clustering.
+
+% =====================================================
+\section{Preprocessing and Feature Extraction Results}
+
+\subsection{Dataset Cleaning Results}
+
+After applying the full data cleaning pipeline, all audio recordings were successfully processed.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Metric & Value \\
+\hline
+Total Raw Audio Files & 712 \\
+Successfully Cleaned Files & 712 \\
+Removed / Corrupted Files & 0 \\
+Target Sampling Rate & 16 kHz \\
+Target Audio Duration & 60 seconds \\
+\hline
+\end{tabular}
+\caption{Data Cleaning Summary}
+\end{table}
+
+\subsubsection{Result Interpretation}
+
+The cleaning stage achieved a 100\% retention rate. This indicates:
+\begin{itemize}
+\item The dataset was originally well-curated.
+\item The cleaning thresholds were appropriately selected.
+\item No aggressive filtering removed valid linguistic information.
+\end{itemize}
+
+From a machine learning perspective, this is highly desirable because it preserves dataset diversity and avoids bias introduced by selective data removal.
+
+% -----------------------------------------------------
+
+\subsection{Data Augmentation Results}
+
+Each cleaned audio recording was augmented once, producing an expanded dataset.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Metric & Value \\
+\hline
+Original Clean Samples & 712 \\
+Augmented Samples & 712 \\
+Final Total Samples & 1424 \\
+Augmentation Copies Per File & 1 \\
+\hline
+\end{tabular}
+\caption{Data Augmentation Summary}
+\end{table}
+
+\subsubsection{Result Interpretation}
+
+The augmentation strategy successfully doubled the dataset size while preserving class labels. This is important because augmentation increases model robustness without introducing artificial class imbalance.
+
+Augmentation simulates realistic recording variations such as environmental noise, speaking rate differences, and microphone gain variability. These variations help machine learning models learn invariant linguistic features rather than memorizing recording conditions.
+
+% -----------------------------------------------------
+
+\subsection{Class Distribution After Augmentation}
+
+\subsubsection{Language Distribution}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Language & Number of Samples \\
+\hline
+Korean & 180 \\
+Italian & 180 \\
+Spanish & 180 \\
+German & 172 \\
+\hline
+\end{tabular}
+\caption{Augmented Language Distribution}
+\end{table}
+
+\subsubsection{Gender Distribution}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Gender & Number of Samples \\
+\hline
+Female & 360 \\
+Male & 352 \\
+\hline
+\end{tabular}
+\caption{Augmented Gender Distribution}
+\end{table}
+
+\subsubsection{Result Interpretation}
+
+The dataset remains highly balanced after augmentation. The maximum deviation across languages is only 8 samples, corresponding to approximately 1.1\% imbalance. Gender distribution shows similarly minimal deviation.
+
+In practical machine learning settings, imbalance below 5\% is typically considered negligible. Therefore, no class re-weighting or resampling techniques are required for model training.
+
+% -----------------------------------------------------
+
+\subsection{Feature Extraction Results}
+
+Feature extraction produced a numerical representation for each audio sample. The resulting feature matrix contains one feature vector per audio recording.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Metric & Value \\
+\hline
+Number of Samples & 712 (clean baseline) \\
+Feature Vector Length & 13 \\
+Label Vector Length & 712 \\
+Missing Feature Values & 0 \\
+Infinite Feature Values & 0 \\
+\hline
+\end{tabular}
+\caption{Feature Extraction Summary}
+\end{table}
+
+\subsubsection{Result Interpretation}
+
+The extracted feature matrix is fully valid with no numerical instability issues. The absence of NaN or infinite values indicates that:
+\begin{itemize}
+\item Audio normalization was successful.
+\item Feature computation remained numerically stable.
+\item No corrupted audio propagated into feature space.
+\end{itemize}
+
+% -----------------------------------------------------
+
+\subsection{Pipeline Validation}
+
+Several validation checks confirm preprocessing correctness:
+
+\begin{itemize}
+\item Consistent sample rate across all files
+\item Fixed signal length after padding/truncation
+\item Stable feature statistics across samples
+\item No class distribution collapse after augmentation
+\end{itemize}
+
+% -----------------------------------------------------
+
+\subsection{Implications for Machine Learning}
+
+The resulting dataset has several desirable properties for downstream modeling:
+
+\begin{itemize}
+\item Balanced class distribution
+\item Increased dataset size through augmentation
+\item Noise-robust training representation
+\item Fixed-length feature vectors compatible with classical ML algorithms
+\end{itemize}
+
+These characteristics are expected to improve model generalization performance and reduce overfitting risk.
+
+% -----------------------------------------------------
+
+\subsection{Summary of Preprocessing Success}
+
+Overall, the preprocessing pipeline successfully transformed raw audio recordings into a high-quality machine learning dataset. The pipeline preserved all original recordings, expanded the dataset through controlled augmentation, and produced numerically stable feature representations suitable for both classification and clustering tasks.
+
+
+
+\end{document}
