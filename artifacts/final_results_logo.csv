@@ -1,0 +1,5 @@
+Model,LOGO F1 Score,Best Params
+LogisticRegression,0.9439484126984127,{'clf__C': 10}
+GaussianNB,0.9417073054121247,{}
+RandomForest,0.9417073054121247,"{'clf__max_depth': 10, 'clf__n_estimators': 200}"
+SVC,0.9185591572639765,"{'clf__C': 1, 'clf__kernel': 'rbf'}"

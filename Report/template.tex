@@ -405,6 +405,169 @@ These characteristics are expected to improve model generalization performance a
 
 Overall, the preprocessing pipeline successfully transformed raw audio recordings into a high-quality machine learning dataset. The pipeline preserved all original recordings, expanded the dataset through controlled augmentation, and produced numerically stable feature representations suitable for both classification and clustering tasks.
 
+\section{Determination of Optimal Number of Clusters}
+\label{sec:optimal_k}
+
+To perform unsupervised speaker clustering, the first and most critical step is determining the optimal number of clusters ($k$). Since the speaker labels are unknown, we rely on internal validation metrics: the \textbf{Elbow Method}, \textbf{Silhouette Analysis}, and \textbf{Hierarchical Dendrograms}.
+
+\subsection{Quantitative Analysis: Elbow and Silhouette Methods}
+We evaluated $k$ in the range $[2, 10]$. The results are illustrated in Figure \ref{fig:clustering_metrics}.
+
+\begin{figure}[h!]
+    \centering
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/Elbow_method.png}
+        \caption{Elbow Method: Inertia vs. Number of Clusters.}
+        \label{fig:elbow}
+    \end{minipage}\hfill
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/silhouette_score.png}
+        \caption{Silhouette Score: Metric vs. Number of Clusters.}
+        \label{fig:silhouette}
+    \end{minipage}
+    \caption{Evaluation metrics for determining the optimal cluster count.}
+    \label{fig:clustering_metrics}
+\end{figure}
+
+The analysis of the metrics is as follows:
+\begin{enumerate}
+    \item \textbf{Silhouette Analysis (Figure \ref{fig:silhouette}):} While $k=2$ shows the global maximum (likely distinguishing gender), it is too simplistic for speaker identification. Moving past trivial splits, we observe a distinct \textbf{local maximum at $k=5$}. The score increases from $k=3$ to $k=5$, peaks, and then the trend changes. This suggests that $k=5$ provides the most distinct separation of clusters before the data becomes over-segmented.
+    
+    \item \textbf{Elbow Method (Figure \ref{fig:elbow}):} The inertia curve is smooth, but the rate of decrease (the "elbow") begins to flatten noticeably after $k=5$. This confirms that increasing the complexity beyond 5 clusters yields diminishing returns in terms of variance reduction.
+\end{enumerate}
+
+\subsection{Hierarchical Structure Analysis}
+To further validate the choice of $k=5$, we examined the hierarchical structure of the data using a Dendrogram (Figure \ref{fig:dendogram}).
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.85\textwidth]{img/Agglomerative_dendogram.png}
+    \caption{Dendrogram of Agglomerative Clustering using Ward linkage.}
+    \label{fig:dendogram}
+\end{figure}
+
+The dendrogram visualizes the merging process of the data points. By cutting the tree at a height corresponding to 5 clusters, we obtain distinct branches that capture the underlying structure of the audio features effectively.
+
+\textbf{Conclusion:} Based on the convergence of evidence from the Silhouette local maximum and the Elbow inflection point, we set \textbf{$k=5$} as the optimal number of clusters for the subsequent feature extraction and classification stages.
+\newpage
+\section{Comparative Analysis and Visualization of Clustering Results ($k=4$)}
+\label{sec:clustering_comparison}
+
+Following the determination of the optimal parameters, we proceeded to apply both K-Means and Agglomerative Clustering algorithms setting $k=4$. This choice was made to enforce a direct comparison with the four ground-truth languages: German, Italian, Korean, and Spanish. In this section, we conduct a granular analysis of the cluster compositions, visualized spatial distributions, and the correspondence between the discovered clusters and actual linguistic labels.
+
+This analysis utilizes four key visualizations:
+\begin{enumerate}
+    \item A 3D projection of the K-Means clusters.
+    \item A comparative 2D PCA visualization of both algorithms.
+    \item A distribution plot showing the number of samples per cluster.
+    \item A detailed confusion matrix (heatmap) analyzing the cluster-class correspondence.
+\end{enumerate}
+
+\subsection{Spatial Distribution and Geometry of Clusters}
+
+We begin by examining how the algorithms partitioned the feature space. Audio data, when reduced to principal components, often exhibits non-convex shapes (e.g., elongated "cigars" or irregular manifolds) rather than perfect spheres.
+
+\subsubsection{3D Visualization of K-Means Partitioning}
+Figure \ref{fig:3d_vis} presents the 3D scatter plot of the data points assigned by the K-Means algorithm.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/3d_visualization.png}
+    \caption{3D Visualization of K-Means Clusters ($k=4$) in the PCA-reduced space.}
+    \label{fig:3d_vis}
+\end{figure}
+
+As observed in the 3D space, K-Means attempts to divide the data into distinct volumetric regions. However, a critical limitation is visible: the boundaries between clusters (particularly the green and yellow clusters) appear somewhat arbitrary and linear. K-Means assumes that clusters are spherical and of roughly equal variance. In our dataset, the linguistic features likely form continuous overlapping distributions (especially between Romance languages like Spanish and Italian). The algorithm forces a separation that may not exist in the underlying density, leading to the fragmentation of natural groups.
+
+\subsubsection{2D Comparative Analysis: K-Means vs. Agglomerative}
+Figure \ref{fig:2d_vis} offers a side-by-side comparison of the clustering results projected onto the first two Principal Components.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{img/2d_4cluster_visualization.png}
+    \caption{2D PCA Projection: K-Means (Left) vs. Agglomerative Clustering (Right).}
+    \label{fig:2d_vis}
+\end{figure}
+
+The contrast between the two plots is striking:
+\begin{itemize}
+    \item \textbf{K-Means (Left):} The clusters are defined by rigid boundaries. Notice the vertical and diagonal "cuts" through the data cloud. For instance, the transition from the teal cluster to the purple cluster happens along a strict geometric line. This confirms that K-Means is strictly partitioning space based on Euclidean distance to a centroid, disregarding the local density or continuity of the data points.
+    \item \textbf{Agglomerative (Right):} The structure is much more organic. The purple cluster (top right) and the yellow cluster (left) are formed based on the connectivity of points. Agglomerative clustering, using Ward's linkage, respects the underlying manifold of the data better. It allows for clusters to have irregular shapes, which is crucial for audio data where speaker variations can stretch a cluster in specific dimensions (e.g., pitch or cadence).
+\end{itemize}
+
+\subsection{Cluster Imbalance and Population Analysis}
+An important indicator of clustering quality is how the algorithm distributes the samples. Figure \ref{fig:samples_count} shows the count of samples assigned to each cluster ID.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{img/num_of_samples_per_cluster.png}
+    \caption{Number of samples assigned to each cluster by K-Means and Agglomerative algorithms.}
+    \label{fig:samples_count}
+\end{figure}
+
+\textbf{K-Means Imbalance:}
+K-Means tends to avoid extremely small or extremely large clusters because the objective function (minimizing sum of squared distances) penalizes outliers heavily if they are far from the centroid. We see two large clusters (0 and 3) and two moderate ones. It tries to "balance" the data artificially.
+
+\textbf{Agglomerative Imbalance (Reflecting Reality):}
+Agglomerative clustering produces a highly imbalanced result, with Cluster 2 containing nearly 350 samples, while others are smaller. While extreme imbalance can sometimes be a sign of failure, in this context, it suggests that the algorithm found a massive "super-cluster" of acoustically similar languages (likely the European languages sharing prosodic features), while isolating distinct groups elsewhere. This flexibility allows Agglomerative clustering to capture the fact that some languages in our dataset are much harder to distinguish than others.
+
+\subsection{Cluster-Class Correspondence: The "Purity" Analysis}
+This is the most critical part of our evaluation. Since we have the ground truth labels (German, Italian, Korean, Spanish), we can verify exactly which languages ended up in which cluster. Figure \ref{fig:heatmap} displays the confusion matrices for both algorithms.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{img/ClassCluster_correspondness.png}
+    \caption{Confusion Matrix / Heatmap showing the number of samples from each true language assigned to each cluster.}
+    \label{fig:heatmap}
+\end{figure}
+
+\subsubsection{Analysis of K-Means Performance (Why it Failed)}
+The K-Means heatmap (left) reveals significant confusion and "leakage" across languages.
+\begin{itemize}
+    \item \textbf{Severe Fragmentation of Korean:} Look at the row for "Korean". It is split significantly between Cluster 0 (141 samples) and Cluster 2 (38 samples). K-Means failed to unify the Korean speakers into a single cohesive group.
+    \item \textbf{The "Romance" Confusion:} Italian and Spanish are scattered.
+    \begin{itemize}
+        \item Italian is split between Cluster 2 (85) and Cluster 3 (86).
+        \item Spanish is split between Cluster 1 (90) and Cluster 3 (86).
+    \end{itemize}
+    This indicates that K-Means could not find a centroid that uniquely represents Italian or Spanish. Instead, it created a generic "Cluster 3" that acts as a wastebasket for half of the Italians, half of the Spanish, and even a third of the Germans (62).
+    \item \textbf{Conclusion:} K-Means fails to map clusters to languages. It maps clusters to arbitrary regions of the PCA space that contain mixtures of all languages.
+\end{itemize}
+
+\subsubsection{Analysis of Agglomerative Performance (Why it succeeded)}
+The Agglomerative heatmap (right) tells a much more coherent story.
+
+\textbf{1. The Korean Success Story:}
+The most remarkable result is the classification of **Korean**.
+\begin{itemize}
+    \item \textbf{173 out of 180} Korean samples were assigned to **Cluster 2**.
+    \item This is a near-perfect grouping. Unlike K-Means, Agglomerative clustering recognized that Korean speakers share a very strong, distinct internal structure.
+    \item \textit{Why Korean?} Korean is the only non-Indo-European language in this dataset. It possesses distinct prosodic features, such as being syllable-timed (depending on analysis) and lacking the lexical stress patterns found in German, Spanish, and Italian. It also has unique pitch accent patterns. The Agglomerative algorithm, which builds clusters by merging similar items, successfully latched onto these distinct acoustic signatures early in the hierarchy and kept them together.
+\end{itemize}
+
+\textbf{2. The European "Super-Cluster":}
+While Agglomerative clustering excelled at identifying Korean, it grouped a large portion of \textbf{German (138 samples)} into the same Cluster 2. This suggests that in the feature space, German and Korean share some latent similarity (perhaps pitch range or spectral density) that is stronger than their difference from Romance languages.
+
+\textbf{3. Separation of Spanish and Italian:}
+Agglomerative clustering also showed better purity for the Romance languages compared to K-Means:
+\begin{itemize}
+    \item \textbf{Italian:} 90 samples ended up in Cluster 1, and 87 in Cluster 0. While split, the split is cleaner than K-Means.
+    \item \textbf{Spanish:} 90 samples in Cluster 3, and 60 in Cluster 0.
+\end{itemize}
+It appears that Agglomerative clustering identified two types of speakers within the Romance languages (likely Male vs. Female, or two distinct recording environments), but kept the subgroups relatively pure compared to the random scattering seen in K-Means.
+
+\subsection{Conclusion: Why Agglomerative Clustering is Superior}
+Based on the evidence from Figures \ref{fig:2d_vis} and \ref{fig:heatmap}, we conclude that **Agglomerative Clustering** is significantly better suited for this speaker identification task than K-Means.
+
+\begin{enumerate}
+    \item \textbf{Handling Non-Spherical Data:} Speaker data does not form spherical clouds. Agglomerative clustering (Ward linkage) respects the connectivity of the data, allowing it to trace the elongated manifold of the Korean language cluster.
+    \item \textbf{Preservation of Minority Structures:} K-Means tried to force Korean into a generic cluster with German. Agglomerative clustering successfully identified the uniqueness of the Korean samples (173 samples in one group).
+    \item \textbf{Robustness to Overlap:} The audio features for Spanish and Italian are extremely similar. K-Means failed completely here, creating a mixed "Cluster 3". Agglomerative clustering managed to create at least partial separation, likely by utilizing the hierarchical nature of the data to keep distinct subgroups (e.g., by gender) separate until higher levels of the tree.
+\end{enumerate}
+
+Therefore, for the downstream tasks or further analysis, the structure revealed by the Agglomerative approach provides a much more faithful representation of the underlying linguistic classes.
 
 
 \end{document}

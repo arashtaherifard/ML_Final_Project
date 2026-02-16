@@ -1,0 +1,5 @@
+Model,Best CV Score,Best Params
+SVC,0.9279701824736442,"{'clf__C': 1, 'clf__gamma': 'scale', 'clf__kernel': 'rbf'}"
+GaussianNB,0.9747899000513968,{}
+LogisticRegression,0.9809800427439516,{'clf__C': 1}
+RandomForest,0.96415788817955,"{'clf__max_depth': 10, 'clf__n_estimators': 100}"

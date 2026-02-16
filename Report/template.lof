@@ -1,0 +1,8 @@
+\contentsline {figure}{\numberline {1}{\ignorespaces Elbow Method: Inertia vs. Number of Clusters.}}{13}{figure.1}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Silhouette Score: Metric vs. Number of Clusters.}}{13}{figure.2}%
+\contentsline {figure}{\numberline {3}{\ignorespaces Evaluation metrics for determining the optimal cluster count.}}{13}{figure.3}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Dendrogram of Agglomerative Clustering using Ward linkage.}}{14}{figure.4}%
+\contentsline {figure}{\numberline {5}{\ignorespaces 3D Visualization of K-Means Clusters ($k=4$) in the PCA-reduced space.}}{15}{figure.5}%
+\contentsline {figure}{\numberline {6}{\ignorespaces 2D PCA Projection: K-Means (Left) vs. Agglomerative Clustering (Right).}}{16}{figure.6}%
+\contentsline {figure}{\numberline {7}{\ignorespaces Number of samples assigned to each cluster by K-Means and Agglomerative algorithms.}}{17}{figure.7}%
+\contentsline {figure}{\numberline {8}{\ignorespaces Confusion Matrix / Heatmap showing the number of samples from each true language assigned to each cluster.}}{18}{figure.8}%

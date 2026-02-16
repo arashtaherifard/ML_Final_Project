@@ -1,0 +1,54 @@
+\contentsline {section}{\numberline {1}Data Preprocessing Pipeline}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Overview}{1}{subsection.1.1}%
+\contentsline {section}{\numberline {2}Data Cleaning}{1}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Objectives}{1}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Audio Standardization}{2}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Silence Removal}{2}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Amplitude Normalization}{3}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Duration Standardization}{3}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.6}Data Quality Validation}{3}{subsection.2.6}%
+\contentsline {subsection}{\numberline {2.7}Cleaning Results}{3}{subsection.2.7}%
+\contentsline {section}{\numberline {3}Data Augmentation}{4}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Motivation}{4}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Augmentation Techniques}{4}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Time Shift}{4}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}Additive Noise}{4}{subsubsection.3.2.2}%
+\contentsline {subsubsection}{\numberline {3.2.3}Time Stretch}{4}{subsubsection.3.2.3}%
+\contentsline {subsubsection}{\numberline {3.2.4}Pitch Shift}{5}{subsubsection.3.2.4}%
+\contentsline {subsubsection}{\numberline {3.2.5}Gain Variation}{5}{subsubsection.3.2.5}%
+\contentsline {subsection}{\numberline {3.3}Augmentation Results}{5}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Feature Extraction}{5}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Objectives}{5}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Mel-Frequency Cepstral Coefficients (MFCC)}{6}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Log-Mel Spectrogram Statistics}{6}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Spectral and Temporal Descriptors}{6}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}Statistical Aggregation}{6}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}Feature Extraction Results}{7}{subsection.4.6}%
+\contentsline {section}{\numberline {5}Pipeline Reliability}{7}{section.5}%
+\contentsline {section}{\numberline {6}Conclusion}{8}{section.6}%
+\contentsline {section}{\numberline {7}Preprocessing and Feature Extraction Results}{8}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Dataset Cleaning Results}{8}{subsection.7.1}%
+\contentsline {subsubsection}{\numberline {7.1.1}Result Interpretation}{8}{subsubsection.7.1.1}%
+\contentsline {subsection}{\numberline {7.2}Data Augmentation Results}{9}{subsection.7.2}%
+\contentsline {subsubsection}{\numberline {7.2.1}Result Interpretation}{9}{subsubsection.7.2.1}%
+\contentsline {subsection}{\numberline {7.3}Class Distribution After Augmentation}{10}{subsection.7.3}%
+\contentsline {subsubsection}{\numberline {7.3.1}Language Distribution}{10}{subsubsection.7.3.1}%
+\contentsline {subsubsection}{\numberline {7.3.2}Gender Distribution}{10}{subsubsection.7.3.2}%
+\contentsline {subsubsection}{\numberline {7.3.3}Result Interpretation}{10}{subsubsection.7.3.3}%
+\contentsline {subsection}{\numberline {7.4}Feature Extraction Results}{10}{subsection.7.4}%
+\contentsline {subsubsection}{\numberline {7.4.1}Result Interpretation}{11}{subsubsection.7.4.1}%
+\contentsline {subsection}{\numberline {7.5}Pipeline Validation}{11}{subsection.7.5}%
+\contentsline {subsection}{\numberline {7.6}Implications for Machine Learning}{11}{subsection.7.6}%
+\contentsline {subsection}{\numberline {7.7}Summary of Preprocessing Success}{12}{subsection.7.7}%
+\contentsline {section}{\numberline {8}Determination of Optimal Number of Clusters}{12}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Quantitative Analysis: Elbow and Silhouette Methods}{12}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Hierarchical Structure Analysis}{13}{subsection.8.2}%
+\contentsline {section}{\numberline {9}Comparative Analysis and Visualization of Clustering Results ($k=4$)}{14}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Spatial Distribution and Geometry of Clusters}{15}{subsection.9.1}%
+\contentsline {subsubsection}{\numberline {9.1.1}3D Visualization of K-Means Partitioning}{15}{subsubsection.9.1.1}%
+\contentsline {subsubsection}{\numberline {9.1.2}2D Comparative Analysis: K-Means vs. Agglomerative}{16}{subsubsection.9.1.2}%
+\contentsline {subsection}{\numberline {9.2}Cluster Imbalance and Population Analysis}{17}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}Cluster-Class Correspondence: The "Purity" Analysis}{18}{subsection.9.3}%
+\contentsline {subsubsection}{\numberline {9.3.1}Analysis of K-Means Performance (Why it Failed)}{18}{subsubsection.9.3.1}%
+\contentsline {subsubsection}{\numberline {9.3.2}Analysis of Agglomerative Performance (Why it succeeded)}{19}{subsubsection.9.3.2}%
+\contentsline {subsection}{\numberline {9.4}Conclusion: Why Agglomerative Clustering is Superior}{20}{subsection.9.4}%
